@@ -2,11 +2,15 @@ package _03_To_Do_List;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,6 +44,7 @@ public class ToDoList implements ActionListener {
 	JButton remove = new JButton("Remove Task");
 	JButton save = new JButton("Save List");
 	JButton load = new JButton("Load List");
+	ArrayList<String> list = new ArrayList<String>();
 	public ToDoList() {
 		
 		
@@ -64,13 +69,8 @@ public class ToDoList implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ArrayList<String> list = new ArrayList<String>();
-		try {
-			FileWriter fw = new FileWriter("src/_02_File_Encrypt_Decrypt/Tasks.txt");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	
+	
 		if (e.getSource().equals(add)) {
 			String task = JOptionPane.showInputDialog("Enter a task in the space below.");
 			list.add(task);
@@ -80,9 +80,62 @@ public class ToDoList implements ActionListener {
 			String s = "";
 			for (int i = 0; i < list.size(); i++) {
 				s += "\n" + list.get(i);
-				System.out.println(list.get(i));
 			}
 			JOptionPane.showMessageDialog(null, "List of tasks:"+ s);
+		}
+		if (e.getSource().equals(remove)) {
+			String s = "";
+	
+		for (int i = 0; i < list.size(); i++) {
+			s += "\n" + i + ": " + list.get(i);
+		}
+		String input = 	JOptionPane.showInputDialog("Which task do you want to remove? Enter the corresponding index." + "\n" + s);
+		int index = Integer.parseInt(input);
+		list.remove(index);
+		}
+		if (e.getSource().equals(save)) {
+			String s = "";
+			try {
+				FileWriter fw = new FileWriter("src/_03_To_Do_List/Tasks.txt");
+				for (int i = 0; i < list.size(); i++) {
+					s +=  list.get(i)  + "\n";
+				}
+			
+				fw.write(s);
+				fw.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				
+				e1.printStackTrace();
+			}
+		}
+		if (e.getSource().equals(load)) {
+			list.clear();
+			JFileChooser jfc = new JFileChooser();
+			int returnVal = jfc.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				String fileName = jfc.getSelectedFile().getAbsolutePath();
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(fileName));
+					String line = br.readLine();
+					while(line != null){
+						System.out.println(line);
+			
+						list.add(line);
+						line = br.readLine();
+						
+					}
+					
+					br.close();
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}  catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				System.out.println(fileName);
+			}
 		}
 //		if(e.getSource().equals(remove)) {
 //			JOptionPane.showInputDialog("Which tasks do you want to remove")
